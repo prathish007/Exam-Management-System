@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+		<link rel="stylesheet" href="styles/hallTicket.css">
+    <title>Exam Duty</title>
+
+
+
+  </head>
+  <body>
+    
+<section>
+	<div class="container">
+		<div class="admit-card">
+
+			<div class="BoxE border- padding mar-bot txt-center">
+				<div class="row">
+					<div class="col-sm-12">
+						<h5>EXAMINATION VENUE</h5>
+						<p>Menamkulam,Trivandum,695582<br> KERALA,INDIA</p>
+					</div>
+				</div>
+			</div>
+			<div class="BoxF border- padding mar-bot txt-center">
+				<div class="row">
+					<div class="col-sm-12">
+						<table class="table table-bordered">
+							<thead>
+								<tr>
+									
+
+									<th>Exam Date</th>
+                  <th>Hall No.</th>
+                  <th>Hall Name</th>
+
+								</tr>
+							</thead>
+						  <tbody>
+								<%for(val of exam){ 
+									if(id === val.staffId){%>
+							<tr>
+							  <td><%=val.date%></td>
+							  <td><%=val.roomNo%></td>
+                <td><%=val.deptName%></td>
+							</tr>
+							<%}}%>
+						  </tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+			<footer class="txt-center">
+				<p>*** MARIAN ENGINEERING COLLEGE ***</p>
+			</footer>
+			
+		</div>
+	</div>
+	
+</section>
+
+  </body>
+</html>

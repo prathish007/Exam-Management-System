@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Admin</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto|Varela+Round|Open+Sans">
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+<link rel="stylesheet" href="styles/admin.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+<script type="text/javascript">
+
+//@ignore
+  var n= <%=student.length%>+1;
+  var m = <%=invigilator.length%>+1;
+  var o = <%=course.length%>+1;
+  var p = <%=hall.length%>+1;
+  $(document).ready(function(){
+  var actions = $("table td:last-child").html();
+  // Append table with add row form on add new button click
+  $(".add-new-1").click(function(){
+  var index = $("table tbody tr:last-child").index();
+  var row = `<tr>
+  <td><input type="text" class="form-control" name="enrollmentId`+n+`" id="enrollmentId`+n+`"/></td>
+  <td><input type="text" class="form-control" name="name`+n+`" id="name`+n+`"/></td>
+  <td><input type="text" class="form-control" name="fatherName`+n+`" id="fatherName`+n+`"/></td>
+  <td><select class="form-control" name="gender`+n+`" id="gender`+n+`">  
+    <option value="" selected disabled hidden>Choose here</option>
+    <option value = "M" >M</option>  
+    <option value = "F" >F</option>   
+    </select></td>
+  <td><select class="form-control" name="courseCode`+n+`" id="courseCode`+n+`" >  
+    <option value="" selected disabled hidden>Choose here</option>
+    <option value = "CSE">CSE</option>  
+    <option value = "MEC">MEC</option>
+    <option value = "CHE">CHE</option>
+    <option value = "CE">CE</option>
+    <option value = "EEE">EEE</option>
+    <option value = "ECE">ECE</option>
+    <option value = "IT">IT</option>     
+    <option value = "ARCH">ARCH</option>
+    <option value = "AE">AE</option>
+    <option value = "EIC">EIC</option>
+    <option value = "IE">IE</option>
+    
+    </select></td>
+  <td><select class="form-control" name="semester`+n+`" id="semester`+n+`">  
+    <option value="" selected disabled hidden>Choose here</option>
+    <option value = "1" >1</option>  
+    <option value = "2" >2</option> 
+    <option value = "3" >3</option>
+    <option value = "4" >4</option>
+    <option value = "5" >5</option> 
+    <option value = "6" >6</option>
+    <option value = "7" >7</option> 
+    <option value = "8" >8</option>
+    </select></td>
+  <td><input type="date" class="form-control" name="dob`+n+`" id="dob`+n+`"/></td>
+  <td><input type="text" class="form-control" name="address`+n+`" id="address`+(n++)+`"/></td>
+
+</tr>`
+   $("#table1").append(row);
+
+  });
+//add new for invigilator
+  $(".add-new-2").click(function(){
+  var index = $("table tbody tr:last-child").index();
+  var row = `<tr>
+  <td><input type="text" class="form-control" name="staffId`+m+`" id="staffId`+m+`"/></td>
+  <td><input type="text" class="form-control" name="iname`+m+`" id="iname`+m+`"/></td>
+  <td><input type="text" class="form-control" name="password`+m+`" id="password`+(m++)+`"/></td>
+
+</tr>`
+  $("#table2").append(row);
+
+  });
+
+$(".add-new-3").click(function(){
+  var index = $("table tbody tr:last-child").index();
+  var row = `<tr>
+  <td><select class="form-control" name="scourseCode`+o+`" id="scourseCode`+o+`">  
+    <option value="" selected disabled hidden>Choose here</option>
+    <option value = "CSE">CSE</option>  
+    <option value = "MEC">MEC</option>
+    <option value = "CHE">CHE</option>
+    <option value = "CE">CE</option>
+    <option value = "EEE">EEE</option>
+    <option value = "ECE">ECE</option>
+    <option value = "IT">IT</option>     
+    <option value = "ARCH">ARCH</option>
+    <option value = "AE">AE</option>
+    <option value = "EIC">EIC</option>
+    <option value = "IE">IE</option>
+    
+    </select></td>
+    <td><select class="form-control" name="ssemester`+o+`" id="ssemester`+o+`">  
+    <option value="" selected disabled hidden>Choose here</option>
+    <option value = "1" >1</option>  
+    <option value = "2" >2</option> 
+    <option value = "3" >3</option>
+    <option value = "4" >4</option>
+    <option value = "5" >5</option> 
+    <option value = "6" >6</option>
+    <option value = "7" >7</option> 
+    <option value = "8" >8</option>
+    </select></td>
+    <td><input type="text" class="form-control" name="subjectCode`+o+`" id="subjectCode`+o+`"/></td>
+    <td><input type="date" class="form-control" name="examDate`+o+`" id="examDate`+(o++)+`"/></td>
+
+</tr>`
+  $("#table3").append(row);
+  });
+
+  $(".add-new-4").click(function(){
+  var index = $("table tbody tr:last-child").index();
+  var row = `<tr>
+  <td><input type="text" class="form-control" name="roomNo`+p+`" id="roomNo`+p+`"/></td>
+  <td><input type="text" class="form-control" name="deptName`+p+`" id="deptName`+p+`"/></td>
+  <td><input type="number" class="form-control" name="totalSeats`+p+`" id="totalSeats`+(p++)+`"/></td>
+
+</tr>`
+  $("#table4").append(row);
+
+  });
+
+
+  });
+
+  function hasDuplicate(arr){
+    let d = {}
+  for(var i=0;i<arr.length;i++){
+    if(!d[arr[i]]) d[arr[i]]=1;
+    else return true;
+  }
+  return false;
+  }
+
+  function validateDetails(){
+  let registrationNumbers =[];
+  for(var x=1;x<n;x++){
+    let val=document.getElementById("enrollmentId"+x).value.trim();
+    if(val) registrationNumbers.push(val);
+  }
+  if(hasDuplicate(registrationNumbers)) {
+    alert("Cannot Save!\nWarning: Student Enrollment number has duplicate");
+    return false;
+  }
+  let staffID =[];
+  for(var x=1;x<m;x++){
+    let val=document.getElementById("staffId"+x).value.trim();
+    if(val) staffID.push(val);
+  }
+
+  if(hasDuplicate(staffID)){
+    alert("Cannot save!\nWarning: Staff has duplicate ID's")
+  }
+  
+  let roomNo =[];
+  for(var x=1;x<p;x++){
+    let val=document.getElementById("roomNo"+x).value.trim();
+    if(val) roomNo.push(val);
+  }
+
+  if(hasDuplicate(roomNo)){
+    alert("Cannot save!\nWarning: Hall no has duplicate ID's")
+  }
+  for(var x=1;x<n;x++){
+    let enrollmentId = document.getElementById("enrollmentId"+x).value.trim();
+    let name = document.getElementById("name"+x).value.trim();
+    let fatherName = document.getElementById("fatherName"+x).value.trim();
+    let gender = document.getElementById("gender"+x).value;
+    let courseCode = document.getElementById("courseCode"+x).value;
+    let semester = document.getElementById("semester"+x).value;
+    let dob = document.getElementById("dob"+x).value;
+    let address = document.getElementById("address"+x).value.trim();
+    if(!(enrollmentId && name && fatherName && gender && courseCode && semester && dob && address) && (enrollmentId || name || fatherName || gender || courseCode || semester || dob || address )){
+      alert("Cannot Save!\nWarning: Null value found at row : "+x+" in Student Details");
+      return false;
+    }
+  }
+  for(var x=1;x<m;x++){
+    let staffId = document.getElementById("staffId"+x).value.trim();
+    let iname = document.getElementById("iname"+x).value.trim();
+    let password = document.getElementById("password"+x).value.trim();
+    if(!(staffId && name && password) && (staffId || name || password) && !staffID){
+      alert("Cannot Save!\nWarning: Null value found at row : "+x+" in Invigilator Details");
+      return false;
+    }
+  }
+
+  for(var x=1;x<o;x++){
+    let scourseCode = document.getElementById("scourseCode"+x).value;
+    let ssemester = document.getElementById("ssemester"+x).value;
+    let subjectCode = document.getElementById("subjectCode"+x).value.trim();
+    let examDate = document.getElementById("examDate"+x).value;
+    if(!(scourseCode && ssemester && subjectCode && examDate) && (scourseCode || ssemester || subjectCode || examDate)){
+      if(confirm("Warning: Null value found at row : "+x+" in Course Details\nDo you want to disacard it?") === false) return false; 
+    }
+  }
+  for(var x=1;x<p;x++){
+    let hallNo = document.getElementById("roomNo"+x).value.trim();
+    let hallName = document.getElementById("deptName"+x).value.trim();
+    let totalSeats = document.getElementById("totalSeats"+x).value;
+    if(!(roomNo && deptName && totalSeats) && (roomNo || deptName || totalSeats)){
+      alert("Cannot Save!\nWarning: Null value found at row : "+x+" in Hall Details");
+      return false;
+    }
+  }
+
+  console.log("success");
+  return true;
+  }
+</script>
+</head>
+<body>
+<form method="post" action="/saveDetails" onsubmit="return validateDetails(); ">
+
+  <%if(published){%>
+    <div class="container">
+    <div class="table-wrapper">
+    <div class="table-title">
+    <div class="row">
+    <div class="col-sm-8"><h2><b>Student Details</b></h2></div>
+    <div class="col-sm-4">
+    </div>
+    </div>
+    </div>
+    <table class="table table-bordered" id="table5">
+    <thead>
+    <tr>
+    <th>Enrollment Id</th>
+    <th>Name</th>
+    <th>Room No</th>
+    <th>Dept Name</th>
+    <th>Seat Number</th>
+    <th>Subject Code</th>
+    <th>Exam Date</th>
+    </tr>
+    </thead> 
+    <tbody>
+    <%
+    for(val of pstudent){%>
+    <tr>
+      <td><%=val.enrollmentId%></td>
+      <td><%=val.name%></td>
+      <td><%=val.roomNo%></td>
+      <td><%=val.deptName%></td>
+      <td><%=val.seatNo%></td>
+      <td><%=val.subjectCode%></td>
+      <td><%=val.examDate%></td>
+    </tr>
+    <%}%>
+    
+    </tbody>
+    </table>
+    </div>
+    </div>
+    
+    
+    
+    
+    <div class="container">
+    <div class="table-wrapper">
+    <div class="table-title">
+    <div class="row">
+    <div class="col-sm-8"><h2><b>Invigilator Details</b></h2></div>
+    <div class="col-sm-4">
+    </div>
+    </div>
+    </div>
+    <table class="table table-bordered" id="table6">
+    <thead>
+    <tr>
+    <th>Staff Id</th>
+    <th>Name</th>
+    <th>Room No</th>
+    <th>Dept Name</th>
+    <th>Exam Date</th>
+    </tr>
+    </thead> 
+    <tbody>
+    <%
+    
+    for(val of pinvigilator){%>
+    <tr>
+      <td><%=val.staffId%></td>
+      <td><%=val.name%></td>
+      <td><%=val.roomNo%></td>
+      <td><%=val.deptName%></td>
+      <td><%=val.date%></td>
+    </tr>
+    <%}%>
+    
+    </tbody>
+    </table>
+    </div>
+    </div>
+    <div style="text-align: center; margin: auto">
+<button type="submit" formaction="/unpublish" class="btn" style="margin-right: 20px;">Unpublish</button>
+<button type="submit" formaction="/logout" class="btn" style="color:white; background-color: red;">Logout</button>
+  <%}
+  else{%>
+<div class="container">
+<div class="table-wrapper">
+<div class="table-title">
+<div class="row">
+<div class="col-sm-8"><h2><b>Student Details</b></h2></div>
+<div class="col-sm-4">
+<button type="button" class="btn btn-info add-new-1"><i class="fa fa-plus"></i> Add New</button>
+</div>
+</div>
+</div>
+<table class="table table-bordered" id="table1">
+<thead>
+<tr>
+  <th>Enrollment No</th>
+<th>Name</th>
+<th>Father name</th>
+<th>Sex</th>
+<th>Course</th>
+<th>Semester</th>
+<th>DOB</th>
+<th>Address</th>
+</tr>
+</thead> 
+<tbody>
+<%
+let i=1;
+for(val of student){%>
+<tr>
+  <td><input type="text" class="form-control" name="enrollmentId<%=i%>" id="enrollmentId<%=i%>" value="<%=val.enrollmentId%>"/></td>
+  <td><input type="text" class="form-control" name="name<%=i%>" id="name<%=i%>" value="<%=val.name%>"/></td>
+  <td><input type="text" class="form-control" name="fatherName<%=i%>" id="fatherName<%=i%>" value="<%=val.fatherName%>"/></td>
+  <td><select class="form-control" name="gender<%=i%>" id="gender<%=i%>">  
+    <option value = "M"  <%if(val.gender==="M"){%> selected <%}%> >M</option>  
+    <option value = "F" <%if(val.gender==="F"){%> selected <%}%> >F</option>   
+    </select></td>
+  <td><select class="form-control" name="courseCode<%=i%>" id="courseCode<%=i%>">  
+    <option value = "CSE"  <%if(val.courseCode==="CSE"){%> selected <%}%> >CSE</option>  
+    <option value = "MEC" <%if(val.courseCode==="MEC"){%> selected <%}%> >MEC</option>
+    <option value = "CHE" <%if(val.courseCode==="CHE"){%> selected <%}%> >CHE</option>
+    <option value = "CE" <%if(val.courseCode==="CE"){%> selected <%}%> >CE</option>
+    <option value = "EEE" <%if(val.courseCode==="EEE"){%> selected <%}%> >EEE</option>
+    <option value = "ECE" <%if(val.courseCode==="ECE"){%> selected <%}%> >ECE</option>
+    <option value = "IT" <%if(val.courseCode==="IT"){%> selected <%}%> >IT</option>     
+    <option value = "ARCH" <%if(val.courseCode==="ARCH"){%> selected <%}%> >ARCH</option>
+    <option value = "AE" <%if(val.courseCode==="AE"){%> selected <%}%>>AE</option>
+    <option value = "EIC" <%if(val.courseCode==="EIC"){%> selected <%}%> >EIC</option>
+    <option value = "IE" <%if(val.courseCode==="IE"){%> selected <%}%> >IE</option>
+    
+    </select></td>
+  <td><select class="form-control" name="semester<%=i%>" id="semester<%=i%>">  
+    <option value = "1"  <%if(val.semester==="1"){%> selected <%}%> >1</option>  
+    <option value = "2" <%if(val.semester==="2"){%> selected <%}%> >2</option> 
+    <option value = "3" <%if(val.semester==="3"){%> selected <%}%> >3</option>
+    <option value = "4" <%if(val.semester==="4"){%> selected <%}%> >4</option>
+    <option value = "5" <%if(val.semester==="5"){%> selected <%}%> >5</option> 
+    <option value = "6" <%if(val.semester==="6"){%> selected <%}%> >6</option>
+    <option value = "7" <%if(val.semester==="7"){%> selected <%}%> >7</option> 
+    <option value = "8" <%if(val.semester==="8"){%> selected <%}%> >8</option>
+    </select></td>
+  <td><input type="date" class="form-control" name="dob<%=i%>" id="dob<%=i%>" value="<%=val.dob%>"/></td>
+  <td><input type="text" class="form-control" name="address<%=i%>" id="address<%=i++%>" value="<%=val.address%>"/></td>
+
+</tr>
+<%}%>
+
+</tbody>
+</table>
+</div>
+</div>
+
+
+<div class="container">
+<div class="table-wrapper">
+<div class="table-title">
+<div class="row">
+<div class="col-sm-8"><h2><b>Invigilator Details</b></h2></div>
+<div class="col-sm-4">
+<button type="button" class="btn btn-info add-new-2"><i class="fa fa-plus"></i> Add New</button>
+</div>
+</div>
+</div>
+<table class="table table-bordered" id="table2">
+<thead>
+<tr>
+<th>Staff ID</th>
+<th>Name</th>
+<th>Password</th>
+</tr>
+</thead> 
+<tbody>
+<%
+let j=1;
+for(val of invigilator){%>
+<tr>
+  <td><input type="text" class="form-control" name="staffId<%=j%>" id="staffId<%=j%>" value="<%=val.staffId%>"/></td>
+  <td><input type="text" class="form-control" name="iname<%=j%>" id="iname<%=j%>" value="<%=val.name%>"/></td>
+  <td><input type="text" class="form-control" name="password<%=j%>" id="password<%=j++%>" value="<%=val.password%>"/></td>
+
+</tr>
+<%}%>
+
+</tbody>
+</table>
+</div>
+</div>
+
+<div class="container">
+<div class="table-wrapper">
+<div class="table-title">
+<div class="row">
+<div class="col-sm-8"><h2><b>Course Details</b></h2></div>
+<div class="col-sm-4">
+<button type="button" class="btn btn-info add-new-3"><i class="fa fa-plus"></i> Add New</button>
+</div>
+</div>
+</div>
+<table class="table table-bordered" id="table3">
+<thead>
+<tr>
+<th>Course Code</th>
+<th>Semester</th>
+<th>Subject Code</th>
+<th>Exam Date</th>
+</tr>
+</thead> 
+<tbody>
+<%
+let k=1;
+for(val of course){%>
+<tr>
+  <td><select class="form-control" name="scourseCode<%=k%>" id="scourseCode<%=k%>">  
+    <option value = "CSE"  <%if(val.courseCode==="CSE"){%> selected <%}%> >CSE</option>  
+    <option value = "MEC" <%if(val.courseCode==="MEC"){%> selected <%}%> >MEC</option>
+    <option value = "CHE" <%if(val.courseCode==="CHE"){%> selected <%}%> >CHE</option>
+    <option value = "CE" <%if(val.courseCode==="CE"){%> selected <%}%> >CE</option>
+    <option value = "EEE" <%if(val.courseCode==="EEE"){%> selected <%}%> >EEE</option>
+    <option value = "ECE" <%if(val.courseCode==="ECE"){%> selected <%}%> >ECE</option>
+    <option value = "IT" <%if(val.courseCode==="IT"){%> selected <%}%> >IT</option>     
+    <option value = "ARCH" <%if(val.courseCode==="ARCH"){%> selected <%}%> >ARCH</option>
+    <option value = "AE" <%if(val.courseCode==="AE"){%> selected <%}%>>AE</option>
+    <option value = "EIC" <%if(val.courseCode==="EIC"){%> selected <%}%> >EIC</option>
+    <option value = "IE" <%if(val.courseCode==="IE"){%> selected <%}%> >IE</option>
+    </select></td>
+    <td><select class="form-control" name="ssemester<%=k%>" id="ssemester<%=k%>">  
+    <option value = "1"  <%if(val.semester==="1"){%> selected <%}%> >1</option>  
+    <option value = "2" <%if(val.semester==="2"){%> selected <%}%> >2</option> 
+    <option value = "3" <%if(val.semester==="3"){%> selected <%}%> >3</option>
+    <option value = "4" <%if(val.semester==="4"){%> selected <%}%> >4</option>
+    <option value = "5" <%if(val.semester==="5"){%> selected <%}%> >5</option> 
+    <option value = "6" <%if(val.semester==="6"){%> selected <%}%> >6</option>
+    <option value = "7" <%if(val.semester==="7"){%> selected <%}%> >7</option> 
+    <option value = "8" <%if(val.semester==="8"){%> selected <%}%> >8</option>
+    </select></td>
+    <td><input type="text" class="form-control" name="subjectCode<%=k%>" id="subjectCode<%=k%>" value="<%=val.subjectCode%>"/></td>
+    <td><input type="date" class="form-control" name="examDate<%=k%>" id="examDate<%=k++%>" value="<%=val.examDate%>"/></td>
+
+
+</tr>
+<%}%>
+
+</tbody>
+</table>
+</div>
+</div>
+
+<div class="container">
+<div class="table-wrapper">
+<div class="table-title">
+<div class="row">
+<div class="col-sm-8"><h2><b>Hall Details</b></h2></div>
+<div class="col-sm-4">
+<button type="button" class="btn btn-info add-new-4"><i class="fa fa-plus"></i> Add New</button>
+</div>
+</div>
+</div>
+<table class="table table-bordered" id="table4">
+<thead>
+<tr>
+<th>Room No</th>
+<th>Dept Name</th>
+<th>Total seats</th>
+</tr>
+</thead> 
+<tbody>
+<%
+let l=1;
+for(val of hall){%>
+<tr>
+  <td><input type="text" class="form-control" name="roomNo<%=l%>" id="roomNo<%=l%>" value="<%=val.roomNo%>"/></td>
+  <td><input type="text" class="form-control" name="deptName<%=l%>" id="deptName<%=l%>" value="<%=val.deptName%>"/></td>
+  <td><input type="number" class="form-control" name="totalSeats<%=l%>" id="totalSeats<%=l%>" value="<%=val.totalSeats%>"/></td>
+</tr>
+<%}%>
+
+</tbody>
+</table>
+</div>
+</div>
+
+
+
+
+
+<div style="text-align: center; margin: auto">
+
+<button type="submit" style=" padding-right: 20px; padding-left: 20px; margin-right: 20px;" class="btn">Save</button>
+<button type="submit" formaction="/publish" class="btn" style="margin-right: 20px;">Publish</button>
+<button type="submit" formaction="/logout" class="btn" style="color:white; background-color: red;">Logout</button>
+<%}%>
+
+</form>
+</body>
+</html> 

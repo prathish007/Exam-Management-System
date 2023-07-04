@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="styles/hallTicket.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <title>Hall Ticket</title>
+  </head>
+  <body>
+    
+<section>
+	<div class="container">
+		<div class="admit-card">
+			<div class="BoxA border- padding mar-bot"> 
+				<div class="row">
+					<div class="col-sm-4">
+						<h5>MARIAN ENGINEERING COLLEGE</h5>
+						<p>Menamkulam,Trivandum,695582<br> KERALA, INDIA</p>
+					</div>
+					<div class="col-sm-4 txt-center">
+
+					</div>
+					<div class="col-sm-4">
+						<h5>Admit Card</h5>
+						<p>B tech<%=student.courseName%> - 2023</p>
+					</div>
+				</div>
+			</div>
+				<div class="row">
+					<div class="col-sm-12">
+						<table class="table table-bordered">
+						  <tbody>
+							<tr>
+							  <td><b>ENROLLMENT NO : <%=student.enrollmentId%></b</td>
+							  <td><b>Course: </b>B.tech <%=student.courseCode%></td>
+							</tr>
+							<tr>        
+				<td><b>Student Name:</b> <%=student.name%></td>
+				<td><b>Sex: </b>M</td>
+							</tr>
+							<tr>
+							  <td><b>Father/Husband Name: </b><%=student.fatherName%></td>
+							  <td><b>DOB: </b><%=student.dob%></td>
+							</tr>
+							<tr>
+							  <td colspan="2" style="    height: 125px;"><b>Address: </b><%=student.address%></td>
+							</tr>
+						  </tbody>
+						</table>
+					</div>
+				</div>
+			<div class="BoxE border- padding mar-bot txt-center">
+				<div class="row">
+					<div class="col-sm-12">
+						<h5>EXAMINATION VENUE</h5>
+						<p>Menamkulam,Trivandum,695582 <br> KERALA, INDIA</p>
+					</div>
+				</div>
+			</div>
+
+				<div class="row">
+					<div class="col-sm-12">
+						<table class="table table-bordered">
+							<thead>
+								<tr>
+									<th>Course code</th>
+									<th>Exam Date</th>
+                  <th>Room No.</th>
+                  <th>Dept Name</th>
+									<th>Seat No.</th>
+								</tr>
+							</thead>
+						  <tbody>
+                <%for(val of exam){
+									if(id===val.enrollmentId){%>
+							<tr>
+							  <td><%=val.subjectCode%></td>
+							  <td><%=val.examDate%></td>
+                <td><%=val.roomNo%></td>
+                <td><%=val.deptName%></td>
+								<td><%=val.seatNo%></td>
+							</tr>
+              <%}}%>
+						  </tbody>
+						</table>
+					</div>
+				</div>
+			<footer class="txt-center">
+				<p>*** MARIAN ENGINEERING COLLEGE ***</p>
+			</footer>
+			
+		</div>
+	</div>
+	
+</section>
+</body>
+</html>
