@@ -1,17 +1,35 @@
 const express = require('express');
 const fs = require('fs');
 const path =  require('path');
+const db = require('./data/database');
+const mongodbStore = require('connect-mongodb-session');
+const session = require('express-session');
+const bcryptjs = require('bcryptjs');
 app = express();
 
+const MongoDBStore = mongodbStore(session);
+const sessionStore = new MongoDBStore({
+  uri: 'mongodb://127.0.0.1:27017',
+  databaseName: 'exam-management-portal',
+  collection: 'sessions'
+});
 
 //middleware functions
 app.set('views',path.join(__dirname,'views'));
 app.set('view engine','ejs');
 app.use(express.urlencoded({extended:false}));
 app.use(express.static('public'))
+app.use(session({
+  secret: 'prathish',
+  resave: false,
+  saveUninitialized: false,
+  store: sessionStore
+}))
+
 
 //functions
-function saveHallDetails(details){
+
+async function saveHallDetails(details){
   let i=1;
   const hallDetails = [];
   while(details['roomNo'+i]){
@@ -22,10 +40,18 @@ function saveHallDetails(details){
     hallDetails.push(o);
     i++;
   }
-  fs.writeFileSync(path.join(__dirname,"hallDetails.json"),JSON.stringify(hallDetails));
+
+    await db.getDb().collection('hallDetails').drop();
+    await db.getDb().createCollection('hallDetails');
+
+  if(hallDetails.length>0){
+    const insertFlag =await db.getDb().collection('hallDetails').insertMany(hallDetails);
+    console.log(insertFlag);
+  }
+  else console.log('No hall details is inserted');
 }
 
-function saveStudentDetails(details){
+async function saveStudentDetails(details){
   let i=1;
   const studentDetails = [];
   while(details['enrollmentId'+i]){
@@ -40,10 +66,20 @@ function saveStudentDetails(details){
     o['address']=details['address'+i];
     studentDetails.push(o);
     i++;
+  } 
+
+  await db.getDb().collection('studentDetails').drop();
+  await db.getDb().createCollection('studentDetails');
+
+  if(studentDetails.length > 0) 
+  {
+    const insertFlag = await db.getDb().collection('studentDetails').insertMany(studentDetails);
+    console.log(insertFlag);
   }
-  fs.writeFileSync(path.join(__dirname,"studentDetails.json"),JSON.stringify(studentDetails));
-}
-function saveInvigilatorDetails(details){
+  else console.log('No student deletails inserted!');
+  }
+
+async function saveInvigilatorDetails(details){
   let i=1;
   const invigilatorDetails = [];
   while(details['staffId'+i]){
@@ -54,9 +90,17 @@ function saveInvigilatorDetails(details){
     invigilatorDetails.push(o);
     i++;
   }
-  fs.writeFileSync(path.join(__dirname,"invigilatorDetails.json"),JSON.stringify(invigilatorDetails));
+
+  await db.getDb().collection('invigilatorDetails').drop();
+  await db.getDb().createCollection('invigilatorDetails');
+  
+  if(invigilatorDetails.length>0){
+  const insertFlag = await db.getDb().collection('invigilatorDetails').insertMany(invigilatorDetails);
+  console.log(insertFlag)
+  }
+  else console.log('No invigilator details inserted!');
 }
-function saveCourseDetails(details){
+async function saveCourseDetails(details){
   let i=1;
   const courseDetails = [];
   while(details['scourseCode'+i]){
@@ -68,15 +112,22 @@ function saveCourseDetails(details){
     courseDetails.push(o);
     i++;
   }
-  fs.writeFileSync(path.join(__dirname,"courseDetails.json"),JSON.stringify(courseDetails));
+ await db.getDb().collection('courseDetails').drop();
+ await db.getDb().createCollection('courseDetails');
+
+  
+  if(courseDetails.length>0){
+    const insertFlag = await db.getDb().collection('courseDetails').insertMany(courseDetails);
+    console.log(insertFlag);
+  }
+  else console.log('No course details inserted!');
 }
 
 //post methods
-app.post('/getHallTicket',function(req,res){
+app.post('/getHallTicket',async function(req,res){
   const userEnrollmentId = req.body.registrationNumber;
   const userDob = req.body.date;
-  const filePath = path.join(__dirname,'studentDetails.json');
-  const studentDetails = JSON.parse(fs.readFileSync(filePath));
+  const studentDetails = await db.getDb().collection('studentDetails').find().toArray();
   let flag=1;
   let student ={};
   for (const val of studentDetails){
@@ -89,19 +140,19 @@ app.post('/getHallTicket',function(req,res){
   if(flag===1){
     res.render('studentLogin',{flag:flag});
  }
-  const others = JSON.parse(fs.readFileSync(path.join(__dirname,'others.json')));
+  const others = JSON.parse(fs.readFileSync(path.join(__dirname,'data','others.json')));
   if(!others.isPublished) flag=2;
   if(flag===0){
-    const examDetails = JSON.parse(fs.readFileSync(path.join(__dirname,"publishedStudentDetails.json"))); 
+    const examDetails= await db.getDb().collection('publishedStudentDetails').find().toArray();
      res.render('hallTicketDetails',{student: student,exam: examDetails,id: userEnrollmentId});
   }
   else res.render('studentLogin',{flag:flag});
 
 })
 
-app.post('/proctor',function(req,res){
+app.post('/proctor',async function(req,res){
 
-  const invigilatorDetails = JSON.parse(fs.readFileSync(path.join(__dirname,'invigilatorDetails.json')));
+  const invigilatorDetails =db.getDb().collection('invigilatorDetails').find().toArray();
   let flag=1;
   for (const val of invigilatorDetails){
     if(val.staffId === id && val.password === password) {
@@ -112,80 +163,107 @@ app.post('/proctor',function(req,res){
   if(flag===1){
     res.render('login',{flag:flag});
   }
-  const others = JSON.parse(fs.readFileSync(path.join(__dirname,'others.json')));
+  const others = JSON.parse(fs.readFileSync(path.join(__dirname,'data','others.json')));
   if(!others.isPublished) flag=2;
   if(flag===0){
-    const publishedInvigilatorDetails = JSON.parse(fs.readFileSync(path.join(__dirname,"publishedInvigilatorDetails.json")));
+    const publishedInvigilatorDetails = await db.getDb().collection('publishedInvigilatorDetails').find().toArray();
      res.render('invigilator',{exam: publishedInvigilatorDetails,id: id});
   }
   else res.render('login',{flag:flag});
   
 })
 
-app.post('/admin/student',function(req,res){
-const id = req.body.id;
+app.post('/admin/student',async function(req,res){
+const userId = req.body.id;
 const password = req.body.password;
-const student = JSON.parse(fs.readFileSync(path.join(__dirname,'studentDetails.json')));
-const others = JSON.parse(fs.readFileSync(path.join(__dirname,'others.json')));
-if(id==='admin' && password=='password'){
-  others.isLoggedIn=true;
-  fs.writeFileSync(path.join(__dirname,'others.json'),JSON.stringify(others));
+const student = await db.getDb().collection('studentDetails').find().toArray();
+const adminarr = await db.getDb().collection('admin').find({userId: 'admin'}).toArray(); 
+const admin = adminarr[0];
+const passwordAreEqual = await bcryptjs.compare(password,admin.password);
+if(userId===admin.userId && passwordAreEqual){
+  req.session.userId = admin.userId;
+  req.session.isLoggedIn =  true;
   res.status(200).render('studentDetails',{student: student}); 
 }
-
+else{
+  res.redirect('/adminLogin');
+}
 })
 
 
-app.post('/saveDetails/student',function(req,res){
-  saveStudentDetails(req.body);
+app.post('/saveDetails/student', async function(req,res){
+  req.session.isLoggedIn
+  if(req.session.isLoggedIn){
+  await saveStudentDetails(req.body);
   res.redirect('/admin/student');
+  }
+  else res.status(401).send('<h1>Unauthorized Access!<h1/>');
 })
 
-app.post('/saveDetails/invigilator',function(req,res){
-  saveInvigilatorDetails(req.body);
+app.post('/saveDetails/invigilator',async function(req,res){
+  req.session.isLoggedIn
+  if(req.session.isLoggedIn){
+ await saveInvigilatorDetails(req.body);
   res.redirect('/admin/invigilator');
-
+}
+else res.status(401).send('<h1>Unauthorized Access!<h1/>');
 })
 
-app.post('/saveDetails/course',function(req,res){
-  saveCourseDetails(req.body);
+app.post('/saveDetails/course',async function(req,res){
+  req.session.isLoggedIn
+  if(req.session.isLoggedIn){
+  await saveCourseDetails(req.body);
   res.redirect('/admin/course');
+}
+else res.status(401).send('<h1>Unauthorized Access!<h1/>');
 })
 
-app.post('/saveDetails/hall',function(req,res){
-  saveHallDetails(req.body);
+app.post('/saveDetails/hall',async function(req,res){
+  req.session.isLoggedIn
+  if(req.session.isLoggedIn){
+  await saveHallDetails(req.body);
   res.redirect('/admin/hall');
+}
+else res.status(401).send('<h1>Unauthorized Access!<h1/>');
 })
 
-app.post('/logout',function(req,res){
-const others = JSON.parse(fs.readFileSync(path.join(__dirname,'others.json')));
-others.isLoggedIn = false;
-fs.writeFileSync(path.join(__dirname,'others.json'),JSON.stringify(others));
+app.post('/logout',async function(req,res){
+const others = JSON.parse(fs.readFileSync(path.join(__dirname,'data','others.json')));
+req.session.user = null;
+req.session.isLoggedIn = false;
 res.redirect('/adminLogin');
-if(!others.isPublished)
-saveDetails(req.body);
+if(!others.isPublished){
+  let type= req.body.type;
+  if(type===1) await saveStudentDetails(req.body);
+  else if(type===2) await saveInvigilatorDetails(req.body);
+  else if(type===3) await saveCourseDetails(req.body);
+  else if(type===4) await saveHallDetails(req.body);
+}
+
 })
 
 
 
 
 //algorithm for shuffling students based on thier subject code
-app.post("/publish",function(req,res){
+app.post("/publish",async function(req,res){
+  req.session.isLoggedIn
+  if(req.session.isLoggedIn){
   let type= req.body.type;
-  if(type===1) saveStudentDetails(req.body);
-  else if(type===2) saveInvigilatorDetails(req.body);
-  else if(type===3) saveCourseDetails(req.body);
-  else if(type===4) saveHallDetails(req.body);
-  const others = JSON.parse(fs.readFileSync(path.join(__dirname,"others.json")));
+  if(type===1) await saveStudentDetails(req.body);
+  else if(type===2) await saveInvigilatorDetails(req.body);
+  else if(type===3) await saveCourseDetails(req.body);
+  else if(type===4) await saveHallDetails(req.body);
+  const others = JSON.parse(fs.readFileSync(path.join(__dirname,'data',"others.json")));
   others.isPublished=true;
-  fs.writeFileSync(path.join(__dirname,"others.json"),JSON.stringify(others)); 
+  fs.writeFileSync(path.join(__dirname,'data',"others.json"),JSON.stringify(others)); 
   res.redirect('/admin')
 
   //getting same dates for all subject courses
-  const course = JSON.parse(fs.readFileSync(path.join(__dirname,"courseDetails.json")));
-  const hall = JSON.parse(fs.readFileSync(path.join(__dirname,"hallDetails.json")));
-  const student =JSON.parse(fs.readFileSync(path.join(__dirname,"studentDetails.json")));
-  const invigilator =JSON.parse(fs.readFileSync(path.join(__dirname,"invigilatorDetails.json")));
+  const course = await db.getDb().collection('courseDetails').find().toArray();
+  const hall = await db.getDb().collection('hallDetails').find().toArray();
+  const student =await db.getDb().collection('studentDetails').find().toArray();
+  const invigilator =await db.getDb().collection('invigilatorDetails').find().toArray();
   
   let dtcc={}
   for(val of course){
@@ -240,7 +318,6 @@ app.post("/publish",function(req,res){
       }
       if(totalRequiredSeats==0) break;
     }
-    // console.log(buff2);
     let totalStudents = 0;
     for(b of buff2){
       if(b.enrollmentId) totalStudents++;
@@ -248,7 +325,6 @@ app.post("/publish",function(req,res){
     let totalInvigilators = invigilator.length;
     let stoir = Math.ceil(totalStudents/totalInvigilators);
 
-    // console.log(stoir)
   let inv= 0;
   let buff3=[];
     for(y of hall){
@@ -272,10 +348,18 @@ app.post("/publish",function(req,res){
       buffTotal2.push(q);
     }
   }
-  console.log(buffTotal2);
-  fs.writeFileSync(path.join(__dirname,"publishedStudentDetails.json"),JSON.stringify(buffTotal));
-  fs.writeFileSync(path.join(__dirname,"publishedInvigilatorDetails.json"),JSON.stringify(buffTotal2));
-  
+  await db.getDb().createCollection('publishedStudentDetails');
+  await db.getDb().collection('publishedStudentDetails').drop();
+
+  const insertFlag1 = await db.getDb().collection('publishedStudentDetails').insertMany(buffTotal);
+  console.log(insertFlag1)
+  await db.getDb().createCollection('publishedInvigilatorDetails');
+   await db.getDb().collection('publishedInvigilatorDetails').drop();
+
+  const insertFlag2 = await db.getDb().collection('publishedInvigilatorDetails').insertMany(buffTotal2);
+  console.log(insertFlag2)
+}
+else res.status(401).send('<h1>Unauthorized Access!<h1/>');
 })
 
 
@@ -283,10 +367,13 @@ app.post("/publish",function(req,res){
 
 
 app.get('/unpublish',function(req,res){
+  if(req.session.isLoggedIn){
   res.redirect('/admin/student');
-  const others = JSON.parse(fs.readFileSync(path.join(__dirname,'others.json'))); 
+  const others = JSON.parse(fs.readFileSync(path.join(__dirname,'data','others.json'))); 
   others.isPublished=false;
-  fs.writeFileSync(path.join(__dirname,"others.json"),JSON.stringify(others));
+  fs.writeFileSync(path.join(__dirname,'data',"others.json"),JSON.stringify(others));
+  }
+  else res.status(401).send('<h1>Unauthorized Access!<h1/>');
   })
 
 
@@ -311,55 +398,53 @@ app.get('/studentLogin', function (req, res) {
   res.status(200).render('studentLogin',{flag: 0});
 })
 
-app.get('/admin/student',function(req,res){
-  const filePath = path.join(__dirname,'others.json');
-  const others = JSON.parse(fs.readFileSync(filePath));
-  if(!others.isLoggedIn) res.status(401).send('<h1>Access Blocked! Unauthorized Access</h1>');
+app.get('/admin/student',async function(req,res){
+  req.session.isLoggedIn
+  if(!req.session.isLoggedIn) res.status(401).send('<h1>Access Blocked! Unauthorized Access</h1>');
   else{
-  const student = JSON.parse(fs.readFileSync(path.join(__dirname,'studentDetails.json')));
+  const student = await db.getDb().collection('studentDetails').find().toArray();
   res.status(200).render('studentDetails',{student: student});
   }
 })
 
-app.get('/admin/invigilator',function(req,res){
-  const filePath = path.join(__dirname,'others.json');
-  const others = JSON.parse(fs.readFileSync(filePath));
-  if(!others.isLoggedIn) res.status(401).send('<h1>Access Blocked! Unauthorized Access</h1>');
+app.get('/admin/invigilator',async function(req,res){
+  req.session.isLoggedIn
+  if(!req.session.isLoggedIn) res.status(401).send('<h1>Access Blocked! Unauthorized Access</h1>');
   else{
-  const invigilator = JSON.parse(fs.readFileSync(path.join(__dirname,'invigilatorDetails.json')));
+  const invigilator = await db.getDb().collection('invigilatorDetails').find().toArray();
   res.status(200).render('invigilatorDetails',{invigilator: invigilator});
   }
 })
 
-app.get('/admin/course',function(req,res){
-  const filePath = path.join(__dirname,'others.json');
-  const others= JSON.parse(fs.readFileSync(filePath));
-  if(!others.isLoggedIn) res.status(401).send('<h1>Access Blocked! Unauthorized Access</h1>');
+app.get('/admin/course',async function(req,res){
+  req.session.isLoggedIn
+  if(!req.session.isLoggedIn) res.status(401).send('<h1>Access Blocked! Unauthorized Access</h1>');
   else{
-  const course = JSON.parse(fs.readFileSync(path.join(__dirname,'courseDetails.json')));
+  const course = await db.getDb().collection('courseDetails').find().toArray();
   res.status(200).render('courseDetails',{course: course});
   }
 })
 
-app.get('/admin/hall',function(req,res){
-  const filePath = path.join(__dirname,'others.json');
-  const others = JSON.parse(fs.readFileSync(filePath));
-  if(!others.isLoggedIn) res.status(401).send('<h1>Access Blocked! Unauthorized Access</h1>');
+app.get('/admin/hall',async function(req,res){
+  req.session.isLoggedIn
+  if(!req.session.isLoggedIn) res.status(401).send('<h1>Access Blocked! Unauthorized Access</h1>');
   else{
-  const hall = JSON.parse(fs.readFileSync(path.join(__dirname,'hallDetails.json')));
+  const hall = await db.getDb().collection('hallDetails').find().toArray();
   res.status(200).render('hallDetails',{hall: hall});
   }
 })
 
-app.get('/admin',function(req,res){
-  const others = JSON.parse(fs.readFileSync(path.join(__dirname,'others.json')));
-  if(!others.isLoggedIn) res.status(401).send('<h1>Access Blocked! Unauthorized Access</h1>');
+app.get('/admin',async function(req,res){
+  req.session.isLoggedIn
+  const others = JSON.parse(fs.readFileSync(path.join(__dirname,'data','others.json')));
+  if(!req.session.isLoggedIn) res.status(401).send('<h1>Access Blocked! Unauthorized Access</h1>');
   else{
-  const pstudent = JSON.parse(fs.readFileSync(path.join(__dirname,'publishedStudentDetails.json')));
-  const pinvigilator = JSON.parse(fs.readFileSync(path.join(__dirname,'publishedInvigilatorDetails.json')));
+  const pstudent = await db.getDb().collection('publishedStudentDetails').find().toArray();
+  const pinvigilator = await db.getDb().collection('publishedInvigilatorDetails').find().toArray();
   res.status(200).render('publish',{pstudent: pstudent,pinvigilator:pinvigilator,published: others.isPublished}); 
   }
 })
 
-
+db.connectToDatabase().then(function (){
 app.listen(3000);
+})
